@@ -122,18 +122,17 @@ void arp_in(buf_t *buf, uint8_t *src_mac)
         return;
     }
 
-    uint8_t *target_ip = pkt->sender_ip;
-    map_set(&arp_table, target_ip, src_mac);
+    map_set(&arp_table, pkt->sender_ip, src_mac);
 
-    buf_t *cache = (buf_t *)map_get(&arp_buf, target_ip);
+    buf_t *cache = (buf_t *)map_get(&arp_buf, pkt->sender_ip);
     if (cache != NULL)
     {
         ethernet_out(cache, src_mac, NET_PROTOCOL_IP);
-        map_delete(&arp_buf, target_ip);
+        map_delete(&arp_buf, pkt->sender_ip);
     }
     else if (pkt->opcode16 == swap16(ARP_REQUEST) && memcmp(pkt->target_ip, net_if_ip, NET_IP_LEN) == 0)
     {
-        arp_resp(target_ip, pkt->sender_mac);
+        arp_resp(pkt->sender_ip, pkt->sender_mac);
     }
 }
 
