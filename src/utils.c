@@ -1,6 +1,9 @@
 #include "utils.h"
 #include <stdio.h>
 #include <string.h>
+
+#define higher16(x) (x >> 16)
+#define lower16(x) (x & (0xFFFF))
 /**
  * @brief ip转字符串
  * 
@@ -69,7 +72,7 @@ uint8_t ip_prefix_match(uint8_t *ipa, uint8_t *ipb)
 }
 
 /**
- * @brief 计算16位校验和
+ * @brief 计算16位校验和，无需swap。
  * 
  * @param buf 要计算的数据包
  * @param len 要计算的长度
@@ -78,4 +81,22 @@ uint8_t ip_prefix_match(uint8_t *ipa, uint8_t *ipb)
 uint16_t checksum16(uint16_t *data, size_t len)
 {
     // TO-DO
+    uint32_t sum = 0;
+    while(len > 0){
+        if (len == 1){
+            uint16_t tmp = *data;
+            if ((tmp & 0xFF) == 0){
+                tmp = tmp >> 8;
+            }
+            sum += tmp;
+        }else{
+            sum += *data;
+            data++;
+        }
+        len -= 2;
+    }
+    while(higher16(sum) != 0){
+        sum = higher16(sum) + lower16(sum);
+    }
+    return ~lower16(sum);
 }
