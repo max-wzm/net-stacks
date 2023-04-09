@@ -42,8 +42,8 @@ static uint16_t udp_checksum(buf_t *buf, uint8_t *src_ip, uint8_t *dst_ip)
     memcpy(&tmp, buf->data, UDP_PSEUDO_HDR_LEN);
 
     udp_peso_hdr_t *hdr = (udp_peso_hdr_t *)buf->data;
-    memcpy(hdr->dst_ip, dst_ip, NET_IP_LEN);
     memcpy(hdr->src_ip, src_ip, NET_IP_LEN);
+    memcpy(hdr->dst_ip, dst_ip, NET_IP_LEN);
     hdr->placeholder = 0;
     hdr->protocol = NET_PROTOCOL_UDP;
     hdr->total_len16 = udp_hdr->total_len16;
@@ -57,7 +57,7 @@ static uint16_t udp_checksum(buf_t *buf, uint8_t *src_ip, uint8_t *dst_ip)
     {
         buf_remove_padding(buf, 1);
     }
-    
+
     return checksum;
 }
 
@@ -83,7 +83,7 @@ void udp_in(buf_t *buf, uint8_t *src_ip)
 
     uint16_t checksum = hdr->checksum16, cal_checksum;
     hdr->checksum16 = 0;
-    cal_checksum = udp_checksum(buf, net_if_ip, src_ip);
+    cal_checksum = udp_checksum(buf, src_ip, net_if_ip);
     if (cal_checksum != checksum)
     {
         return;
