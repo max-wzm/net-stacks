@@ -85,10 +85,7 @@ uint16_t checksum16(uint16_t *data, size_t len)
     while(len > 0){
         if (len == 1){
             uint16_t tmp = *data;
-            if ((tmp & 0xFF) == 0){
-                tmp = tmp >> 8;
-            }
-            sum += tmp;
+            sum += tmp & 0xFF00;
         }else{
             sum += *data;
             data++;
