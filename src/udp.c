@@ -41,12 +41,12 @@ static uint16_t udp_checksum(buf_t *buf, uint8_t *src_ip, uint8_t *dst_ip)
     udp_peso_hdr_t tmp;
     memcpy(&tmp, buf->data, UDP_PSEUDO_HDR_LEN);
 
-    udp_peso_hdr_t *hdr = (udp_peso_hdr_t *)buf->data;
-    memcpy(hdr->src_ip, src_ip, NET_IP_LEN);
-    memcpy(hdr->dst_ip, dst_ip, NET_IP_LEN);
-    hdr->placeholder = 0;
-    hdr->protocol = NET_PROTOCOL_UDP;
-    hdr->total_len16 = udp_hdr->total_len16;
+    udp_peso_hdr_t *ps_hdr = (udp_peso_hdr_t *)buf->data;
+    memcpy(ps_hdr->src_ip, src_ip, NET_IP_LEN);
+    memcpy(ps_hdr->dst_ip, dst_ip, NET_IP_LEN);
+    ps_hdr->placeholder = 0;
+    ps_hdr->protocol = NET_PROTOCOL_UDP;
+    ps_hdr->total_len16 = udp_hdr->total_len16;
 
     uint16_t checksum = checksum16((uint16_t *)buf->data, buf->len);
 
@@ -100,8 +100,7 @@ void udp_in(buf_t *buf, uint8_t *src_ip)
     else
     {
         buf_remove_header(buf, UDP_HDR_LEN);
-        udp_handler_t h = *handler;
-        h(buf->data, buf->len, src_ip, swap16(hdr->src_port16));
+        (*handler)(buf->data, buf->len, src_ip, swap16(hdr->src_port16));
     }
 }
 
