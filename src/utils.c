@@ -75,7 +75,7 @@ uint8_t ip_prefix_match(uint8_t *ipa, uint8_t *ipb)
  * @brief 计算16位校验和，无需swap。
  * 
  * @param buf 要计算的数据包
- * @param len 要计算的长度
+ * @param len 要计算的长度(in Bytes)
  * @return uint16_t 校验和
  */
 uint16_t checksum16(uint16_t *data, size_t len)
