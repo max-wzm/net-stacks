@@ -31,7 +31,7 @@ static uint16_t udp_checksum(buf_t *buf, uint8_t *src_ip, uint8_t *dst_ip)
     int padded = 0;
     if (buf->len % 2 == 1)
     {
-        padded = 2;
+        padded = 1;
         buf_add_padding(buf, 1);
     }
 
@@ -57,6 +57,7 @@ static uint16_t udp_checksum(buf_t *buf, uint8_t *src_ip, uint8_t *dst_ip)
     {
         buf_remove_padding(buf, 1);
     }
+    
     return checksum;
 }
 
@@ -73,17 +74,22 @@ void udp_in(buf_t *buf, uint8_t *src_ip)
     {
         return;
     }
+
     udp_hdr_t *hdr = (udp_hdr_t *)buf->data;
     if (buf->len < swap16(hdr->total_len16))
     {
         return;
     }
-    uint16_t checksum = hdr->checksum16;
+
+    uint16_t checksum = hdr->checksum16, cal_checksum;
     hdr->checksum16 = 0;
-    if (udp_checksum(buf, src_ip, net_if_ip) != checksum)
+    cal_checksum = udp_checksum(buf, net_if_ip, src_ip);
+    if (cal_checksum != checksum)
     {
         return;
     }
+    hdr->checksum16 = checksum;
+
     uint16_t port = swap16(hdr->dst_port16);
     udp_handler_t *handler = (udp_handler_t *)map_get(&udp_table, &port);
     if (handler == NULL)
