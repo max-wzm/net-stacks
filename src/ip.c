@@ -41,7 +41,7 @@ void ip_in(buf_t *buf, uint8_t *src_mac)
 
     buf_remove_padding(buf, buf->len - swap16(hdr->total_len16));
 
-    if (hdr->protocol == NET_PROTOCOL_UDP || hdr->protocol == NET_PROTOCOL_ICMP)
+    if (hdr->protocol == NET_PROTOCOL_UDP || hdr->protocol == NET_PROTOCOL_ICMP || hdr->protocol == NET_PROTOCOL_TCP)
     {
         buf_remove_header(buf, hdr->hdr_len * IP_HDR_LEN_PER_BYTE);
         net_in(buf, hdr->protocol, hdr->src_ip);
