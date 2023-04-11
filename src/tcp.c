@@ -370,7 +370,7 @@ void tcp_in(buf_t *buf, uint8_t *src_ip)
     {
         tcp_connect_t new_conn = CONNECT_LISTEN;
         map_set(&connect_table, &tcp_key, &new_conn);
-        connect = &new_conn;
+        connect = map_get(&connect_table, &tcp_key);
     }
 
     /*
@@ -413,7 +413,6 @@ void tcp_in(buf_t *buf, uint8_t *src_ip)
         connect->remote_win = src_wnd_sz;
         buf_init(&txbuf, 0);
         tcp_send(&txbuf, connect, tcp_flags_ack_syn);
-        map_set(&connect_table, &tcp_key, connect);
         return;
     }
 
