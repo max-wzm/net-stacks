@@ -82,18 +82,20 @@ uint16_t checksum16(uint16_t *data, size_t len)
 {
     // TO-DO
     uint32_t sum = 0;
+    
     while(len > 0){
         if (len == 1){
-            uint16_t tmp = *data;
-            sum += tmp & 0xFF00;
+            uint8_t tmp = *data;
+            sum += tmp << 8;
+            break;
         }else{
-            sum += *data;
+            sum += swap16(*data);
             data++;
+            len -= 2;
         }
-        len -= 2;
     }
     while(higher16(sum) != 0){
         sum = higher16(sum) + lower16(sum);
     }
-    return ~lower16(sum);
+    return swap16(~lower16(sum));
 }

@@ -28,12 +28,7 @@ map_t udp_table;
 static uint16_t udp_checksum(buf_t *buf, uint8_t *src_ip, uint8_t *dst_ip)
 {
     // TO-DO
-    int padded = 0;
-    if (buf->len % 2 == 1)
-    {
-        padded = 1;
-        buf_add_padding(buf, 1);
-    }
+
 
     udp_hdr_t *udp_hdr = (udp_hdr_t *)buf->data;
 
@@ -52,11 +47,6 @@ static uint16_t udp_checksum(buf_t *buf, uint8_t *src_ip, uint8_t *dst_ip)
 
     memcpy(buf->data, &tmp, UDP_PSEUDO_HDR_LEN);
     buf_remove_header(buf, UDP_PSEUDO_HDR_LEN);
-
-    if (padded)
-    {
-        buf_remove_padding(buf, 1);
-    }
 
     return checksum;
 }
